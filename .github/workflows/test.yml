@@ -1,0 +1,28 @@
+name: test
+on: [push, workflow_dispatch]
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m unittest -v
+      - run: python make_sample.py
+      - name: Reports on the sample files
+        shell: python
+        run: |
+          import subprocess, sys
+          def run(a, b):
+              return subprocess.run([sys.executable, "filediff.py", "sample/" + a, "sample/" + b], capture_output=True, text=True)
+          same = run("menu_old.txt", "menu_same.txt")
+          assert same.returncode == 0 and "The text is the same." in same.stdout, same.stdout
+          win = run("menu_old.txt", "menu_windows.txt")
+          assert win.returncode == 0, win.stdout
+          new = run("menu_old.txt", "menu_new.txt")
+          assert new.returncode == 1 and "Lines added: 2  Lines removed: 1" in new.stdout and "+Lemonade" in new.stdout, new.stdout
+          print("Sample file reports checked.")
