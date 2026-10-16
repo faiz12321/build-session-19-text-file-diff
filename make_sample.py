@@ -3,6 +3,7 @@
 Run: python make_sample.py
 """
 from pathlib import Path
+import stat
 
 FILES = {
     "menu_old.txt": "Tea\nCoffee\nJuice\nWater\nMilk\n",
@@ -13,13 +14,23 @@ FILES = {
 
 
 def make(folder):
-    folder = Path(folder)
-    folder.mkdir(exist_ok=True)
+    folder = Path(folder).absolute()
+    if '..' in folder.parts:
+        raise OSError('Parent-traversal setup paths are not supported.')
+    for parent in reversed(folder.parents):
+        info = parent.lstat()
+        if stat.S_ISLNK(info.st_mode) or getattr(info, 'st_file_attributes', 0) & 0x400:
+            raise OSError('Linked/reparse parents are not supported.')
+    folder.mkdir()
     for name, text in FILES.items():
-        (folder / name).write_bytes(text.encode("utf-8"))
+        with (folder / name).open("xb") as handle:
+            handle.write(text.encode("utf-8"))
     return folder
 
 
 if __name__ == "__main__":
-    make("sample")
+    try:
+        make(Path(__file__).absolute().parent / "sample")
+    except FileExistsError:
+        raise SystemExit("Stopped: sample already exists. Nothing was replaced or deleted.")
     print("Made sample/menu_old.txt, menu_same.txt, menu_new.txt and menu_windows.txt")
