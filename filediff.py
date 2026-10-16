@@ -5,11 +5,32 @@ Exit code: 0 = same text, 1 = different, 2 = could not read.
 """
 import difflib
 import sys
+from pathlib import Path
+import stat
 
 SHOW = 20  # how many lines of the difference to print
 
 
+def regular_input(path):
+    """Reject links, reparse points, special files and hard-linked inputs.
+
+    This check is not a hostile-race guarantee. Keep the file/tree still.
+    """
+    path = Path(path).absolute()
+    if ".." in path.parts:
+        raise OSError("Parent-traversal input paths are not supported.")
+    for part in [*reversed(path.parents), path]:
+        info = part.lstat()
+        if stat.S_ISLNK(info.st_mode) or getattr(info, 'st_file_attributes', 0) & 0x400:
+            raise OSError("Links/reparse points are not supported.")
+    info = path.lstat()
+    if not stat.S_ISREG(info.st_mode) or info.st_nlink > 1:
+        raise OSError("Input must be an ordinary, singly linked regular file.")
+    return path
+
+
 def read_lines(path):
+    path = regular_input(path)
     # Text mode turns \r\n and \r into \n. Splitting on \n only keeps other
     # characters (such as a form feed) inside their line.
     with open(path, encoding="utf-8-sig", newline=None) as f:
