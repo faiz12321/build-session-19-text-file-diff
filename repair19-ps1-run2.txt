@@ -1,0 +1,92 @@
+### CMD: python --version
+Python 3.12.10
+### EXIT: 0
+
+### CMD: python make_sample.py
+Made sample/menu_old.txt, menu_same.txt, menu_new.txt and menu_windows.txt
+### EXIT: 0
+
+### CMD: python make_sample.py
+Stopped: sample already exists. Nothing was replaced or deleted.
+### EXIT: 1
+
+### CMD: python -c "print(open('sample/menu_old.txt').read())"
+Tea
+Coffee
+Juice
+Water
+Milk
+
+### EXIT: 0
+
+### CMD: python filediff.py sample/menu_old.txt sample/menu_new.txt
+sample/menu_old.txt has 5 lines
+sample/menu_new.txt has 6 lines
+### EXIT: 0
+
+### CMD: python filediff.py sample/menu_old.txt sample/menu_new.txt
+Old file: 5 lines. New file: 6 lines.
+Lines added: 2  Lines removed: 1
+--- sample/menu_old.txt
++++ sample/menu_new.txt
+@@ -2,4 +2,5 @@
+ Coffee
+-Juice
++Lemonade
+ Water
+ Milk
++Cake
+Neither file was changed.
+### EXIT: 1
+
+### CMD: python filediff.py sample/menu_old.txt sample/menu_same.txt
+Old file: 5 lines. New file: 5 lines.
+The text is the same.
+Line endings and a missing last line ending are not compared.
+### EXIT: 0
+
+### CMD: python filediff.py sample/menu_old.txt sample/menu_windows.txt
+Old file: 5 lines. New file: 5 lines.
+The text is the same.
+Line endings and a missing last line ending are not compared.
+### EXIT: 0
+
+### CMD: python -m unittest -v
+test_missing_file (test_filediff.Errors.test_missing_file) ... ok
+test_not_utf8 (test_filediff.Errors.test_not_utf8) ... ok
+test_usage (test_filediff.Errors.test_usage) ... ok
+test_directory_refused (test_filediff.InputSafety.test_directory_refused) ... ok
+test_existing_and_dangling_file_symlinks_refused (test_filediff.InputSafety.test_existing_and_dangling_file_symlinks_refused) ... ok
+test_fifo_refused_without_blocking (test_filediff.InputSafety.test_fifo_refused_without_blocking) ... skipped 'Unix named pipes unavailable'
+test_hardlink_refused_preserves_target (test_filediff.InputSafety.test_hardlink_refused_preserves_target) ... ok
+test_parent_directory_symlink_refused (test_filediff.InputSafety.test_parent_directory_symlink_refused) ... ok
+test_parent_traversal_refused (test_filediff.InputSafety.test_parent_traversal_refused) ... ok
+test_self_loop_symlink_refused (test_filediff.InputSafety.test_self_loop_symlink_refused) ... ok
+test_a_blank_line_counts (test_filediff.Lines.test_a_blank_line_counts) ... ok
+test_byte_order_mark_ignored (test_filediff.Lines.test_byte_order_mark_ignored) ... ok
+test_changed_line_starting_with_dashes_counted (test_filediff.Lines.test_changed_line_starting_with_dashes_counted) ... ok
+test_changed_line_starting_with_plus_counted (test_filediff.Lines.test_changed_line_starting_with_plus_counted) ... ok
+test_empty_files_same (test_filediff.Lines.test_empty_files_same) ... ok
+test_empty_vs_one_line (test_filediff.Lines.test_empty_vs_one_line) ... ok
+test_form_feed_stays_inside_its_line (test_filediff.Lines.test_form_feed_stays_inside_its_line) ... ok
+test_missing_last_line_ending_not_a_difference (test_filediff.Lines.test_missing_last_line_ending_not_a_difference) ... ok
+test_old_mac_line_endings (test_filediff.Lines.test_old_mac_line_endings) ... ok
+test_only_first_20_lines_shown (test_filediff.Lines.test_only_first_20_lines_shown) ... ok
+test_trailing_space_is_a_difference (test_filediff.Lines.test_trailing_space_is_a_difference) ... ok
+test_bytes_and_time_unchanged (test_filediff.ReadOnly.test_bytes_and_time_unchanged) ... ok
+test_no_new_files (test_filediff.ReadOnly.test_no_new_files) ... ok
+test_cli_repeat_preserves_every_output (test_filediff.SafeSetup.test_cli_repeat_preserves_every_output) ... ok
+test_existing_file_preserved (test_filediff.SafeSetup.test_existing_file_preserved) ... ok
+test_existing_folder_preserves_nested_bytes_and_mtime (test_filediff.SafeSetup.test_existing_folder_preserves_nested_bytes_and_mtime) ... ok
+test_repeat_preserves_every_output (test_filediff.SafeSetup.test_repeat_preserves_every_output) ... ok
+test_changed (test_filediff.Samples.test_changed) ... ok
+test_same (test_filediff.Samples.test_same) ... ok
+test_sample_files (test_filediff.Samples.test_sample_files) ... ok
+test_swapped_order_reverses_counts (test_filediff.Samples.test_swapped_order_reverses_counts) ... ok
+test_windows_line_endings_not_a_difference (test_filediff.Samples.test_windows_line_endings_not_a_difference) ... ok
+
+----------------------------------------------------------------------
+Ran 32 tests in 0.279s
+
+OK (skipped=1)
+### EXIT: 0
