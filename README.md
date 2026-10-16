@@ -6,7 +6,7 @@ A small read-only Python tool built step by step. Give it an old and a new text 
 
     python make_sample.py                                   # makes four made-up files in sample/
     python filediff.py sample/menu_old.txt sample/menu_new.txt
-    python -m unittest -v                                   # twenty-one automated tests
+    python -m unittest -v                                   # 32 small fixture tests
 
 On Windows, if `python` is not found, use `py`.
 
@@ -27,3 +27,32 @@ On Windows, if `python` is not found, use `py`.
 - Tested only on small made-up files. Python 3.10 and 3.12 on Linux, and, by GitHub Actions, Python 3.12 on Windows and Ubuntu. Not tested on a Windows 10 or 11 desktop or on large files.
 - Educational example, no warranty. Use at your own risk.
 - Code is MIT licensed (see LICENSE). Python is a separate project with its own license; this repository does not include it.
+
+
+## Setup and filesystem safety repair
+
+Use a new empty lesson folder. Setup creates four fictional files exclusively
+in a NEW sample folder. Existing files/folders, traversal spellings and linked/
+reparse parents are refused. It never resets a previous sample folder. Use a
+different new lesson folder after an interrupted setup.
+
+Final checker refuses input/ancestor filesystem links/reparse points, hardlinks,
+directories, special entries and traversal spellings before reading. Stop editors
+and sync; no hostile-race guarantee. It reads whole files and materializes the
+difference, so memory/time can be large; difflib has quadratic worst-case time.
+Not a resource sandbox. A leading UTF-8 BOM is ignored. Same normalized text
+is not proof of identical bytes. Output exposes file paths and difference text;
+keep private output private. No network/upload code is used, but cloud sync and
+other software are outside its control.
+
+Two Windows and two Ubuntu full replays pass 32 tests. Each platform pair differs
+only in unittest time. Windows skips Unix FIFO; Ubuntu runs it. Symlink tests
+can skip where unavailable. Four setup tests and seven filesystem-input tests
+join the original 21 text comparison tests. Tests/recorder clean up only their
+own unique temporary folders and record exact visible file versions. No claim
+of real-data, large-file, every-filesystem or Windows desktop validation.
+
+Sources:
+- https://docs.python.org/3/library/difflib.html
+- https://docs.python.org/3/library/pathlib.html
+- https://docs.python.org/3/library/stat.html
